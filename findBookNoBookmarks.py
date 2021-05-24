@@ -6,10 +6,25 @@ from time import sleep
 from concurrent.futures import ThreadPoolExecutor
 
 book_dir=r"D:\AllDowns\newbooks"
-needing_dir=r"D:\AllDowns\needingbooks"
-fucking_dir=r"D:\AllDowns\fuckingbooks"
+needing_dir=r"D:\AllDowns\newbooks\needingbooks"
+
+fucking_dir=r"D:\AllDowns\newbooks\fuckingbooks"
+good_dir=r"D:\AllDowns\newbooks\good"
+
+if not os.path.exists(needing_dir):
+    os.makedirs(needing_dir)
+
+if not os.path.exists(fucking_dir):
+    os.makedirs(fucking_dir)
+
+if not os.path.exists(good_dir):
+    os.makedirs(good_dir)
 
 check_str="123456789"
+
+def mv2dir(old_path,new_dir,book):
+    new_path=new_dir+os.sep+book
+    os.rename(old_path,new_path)
 
 def check_one_book(book):
     book_path=book_dir+os.sep+book
@@ -18,17 +33,13 @@ def check_one_book(book):
     print("& Start Here &")
     titles=[]
     outlines=reader.getOutlines()
-    if book.startswith("typetype1"):
+    if book.startswith("typetype1") and len(outlines)<=10:
         print("gan!")
-        old_path=book_path
-        new_path=fucking_dir+os.sep+book
-        os.rename(old_path,new_path)
+        # mv2dir(book_path,fucking_dir,book)
         return 
     elif len(outlines)==0:
         print("cao!")
-        old_path=book_path
-        new_path=needing_dir+os.sep+book
-        os.rename(old_path,new_path)
+        mv2dir(book_path,needing_dir,book)
         return 
     elif len(outlines)<=10:
         suspect=1
@@ -41,12 +52,11 @@ def check_one_book(book):
             except TypeError:
                 print("Nested!")
                 suspect=0
+                mv2dir(book_path,good_dir,book)
                 return 
         if suspect==1:
             print("cao!")
-            old_path=book_path
-            new_path=needing_dir+os.sep+book
-            os.rename(old_path,new_path)
+            mv2dir(book_path,needing_dir,book)
             return 
     for each_page_bookmark_pack in outlines:
         try:
@@ -56,9 +66,7 @@ def check_one_book(book):
             titles_s="".join(titles[0:25])
             if check_str in titles_s:
                 print("cao!")
-                old_path=book_path
-                new_path=needing_dir+os.sep+book
-                os.rename(old_path,new_path)
+                mv2dir(book_path,needing_dir,book)
                 return
         except TypeError:
             print("Nested!")
